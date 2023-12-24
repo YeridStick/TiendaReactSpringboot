@@ -20,6 +20,7 @@ public class ProductoServiceImpl implements ProductoService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Override
     public ProductoEntity createProduct(ProductoEntity product, String categoryName) {
         CategoryEntity category = categoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new NotFoundException("No existe la categoria: " + categoryName));

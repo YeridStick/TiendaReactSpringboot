@@ -12,6 +12,6 @@ public interface CategoryService {
     ResponseEntity<CategoryResponseRest> getAllCategories();
     ResponseEntity<CategoryResponseRest> getCategoryByNameCategory(String nameCategory);
     ResponseEntity<CategoryResponseRest> createCategory(CategoryDTO categoryDTO);
-    CategoryDTO editarCategory(CategoryDTO categoryDTO);
-    void eliminarCategory(CategoryDTO categoryDTO) ;
+    ResponseEntity<CategoryResponseRest> editarCategory(CategoryDTO categoryDTO);
+    ResponseEntity<CategoryResponseRest> eliminarCategory(String nameCategory);
 }

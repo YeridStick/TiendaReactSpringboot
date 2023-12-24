@@ -14,17 +14,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/iventory")
+@RequestMapping("/api/category")
 //@CrossOrigin(origins = "http://localhost:4200/")
 public class InventoryController {
     @Autowired
     private CategoryService category;
 
-    @Autowired
-    private ProductoService producto;
-
     //Listar todas las categorias
-    @GetMapping("/category")
+    @GetMapping("category")
     public ResponseEntity<CategoryResponseRest> getAllCategories(){
         ResponseEntity<CategoryResponseRest> response = category.getAllCategories();
         return response;
@@ -44,11 +41,18 @@ public class InventoryController {
         return response;
     }
 
+    //Editar categoria
+    @PutMapping("update-category")
+    public ResponseEntity<CategoryResponseRest> editarCategory(@RequestBody CategoryDTO categoryDTO) {
+        ResponseEntity<CategoryResponseRest>  response = category.editarCategory(categoryDTO);
+        return  response;
+    }
+
     //Eliminar categoria
     @DeleteMapping("delete-category/{nameCategory}")
-    public ResponseEntity<CategoryResponseRest> deleteCategory(@RequestBody CategoryDTO categoryDTO) {
-        category.eliminarCategory(categoryDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CategoryResponseRest> eliminarCategory(@PathVariable String nameCategory) {
+        ResponseEntity<CategoryResponseRest>  response = category.eliminarCategory(nameCategory);
+        return response;
     }
 
 }

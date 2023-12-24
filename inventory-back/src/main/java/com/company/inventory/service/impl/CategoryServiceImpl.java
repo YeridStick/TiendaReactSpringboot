@@ -4,6 +4,7 @@ import com.company.inventory.dto.CategoryDTO;
 import com.company.inventory.exception.NotFoundException;
 import com.company.inventory.model.CategoryEntity;
 import com.company.inventory.repository.CategoryRepository;
+import com.company.inventory.response.CategoryResponse;
 import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    //Lista todas las categorias
+
+    /**
+     * Buscar todas las categorias
+     * @return
+     */
     @Override
     public ResponseEntity<CategoryResponseRest> getAllCategories() {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -41,7 +46,12 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
-    //Bucar por categoria
+
+    /**
+     * Buscar categoria por Nombre
+     * @param nameCategory
+     * @return
+     */
     @Override
     public ResponseEntity<CategoryResponseRest> getCategoryByNameCategory(String nameCategory) {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -60,7 +70,12 @@ public class CategoryServiceImpl implements CategoryService {
         return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
 
-    //Guardar Categoria
+    /**
+     * createCategory
+     ** crea una categoria
+     * @param categoryDTO
+     * @return
+     */
     @Override
     public ResponseEntity<CategoryResponseRest> createCategory(CategoryDTO categoryDTO) {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -68,12 +83,9 @@ public class CategoryServiceImpl implements CategoryService {
 
             // Validar que no exista previamente
             if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-                throw new NotFoundException("Category not found with name: " + categoryDTO.getName());
+                response.setMetadata("La Categoria: " + categoryDTO.getName()  + " Ya Existe", "01", "Error al ingresar: " + categoryDTO.getDescription());
+                return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            /*
-              PUT
-              categoryRepository.findByName(nameCategory).orElseThrow(() -> new NotFoundException("Category not found with name: " + nameCategory));
-            */
 
             // Crear y guardar la nueva categoría
             CategoryEntity newCategory = new CategoryEntity();
@@ -96,33 +108,66 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
+    /**
+     * Editar Categoria
+     ** edita la descripcion de la categoria.
+     * @param categoryDTO
+     * @return
+     */
 
     @Override
-    public CategoryDTO editarCategory(CategoryDTO categoryDTO) {
-        // Encontrar la entidad de categoría a editar
-        CategoryEntity categoryEntity =  categoryRepository.findByName(categoryDTO.getName())
-                .orElseThrow(() -> new NotFoundException("La categoria: " + categoryDTO.getName() + " No existe"));
+    public ResponseEntity<CategoryResponseRest> editarCategory(CategoryDTO categoryDTO) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        try {
+            CategoryEntity categoryEntity =  categoryRepository.findByName(categoryDTO.getName())
+                    .orElseThrow(() -> new NotFoundException("La categoria: " + categoryDTO.getName() + " No existe"));
 
-        // Mapear propiedades del DTO a la entidad
-        categoryEntity.setName(categoryDTO.getName());
-        categoryEntity.setDescription(categoryDTO.getDescription());
+            // Actualizar propiedades de la categoría con los valores del DTO
+            // categoryEntity.setName(categoryEntity.getName());
+            categoryEntity.setDescription(categoryDTO.getDescription());
 
-        // Mapear entidad actualizada a DTO
-        CategoryDTO responseDTO = new CategoryDTO();
-        responseDTO.setName(categoryEntity.getName());
-        responseDTO.setDescription(categoryEntity.getDescription());
+            CategoryEntity updatedCategory = categoryRepository.save(categoryEntity);
 
-        // Devolver DTO actualizado
-        return responseDTO;
+            CategoryResponse categoryResponse = new CategoryResponse();
+            categoryResponse.setCategoryEntity(Arrays.asList(updatedCategory));
+            response.setCategoryResponse(categoryResponse);
+
+            response.setMetadata("Respuesta ok", "00", "Categoría editada exitosamente");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e){
+            response.setMetadata("Repuesta no Exitosa", "01", "Error al editar Categoria");
+            e.printStackTrace(); // Imprimir la traza de la excepción en la consola
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
+
+    /**
+     * Eliminar Categoria
+     * @param nameCategory
+     * @return
+     */
     @Override
-    public void eliminarCategory(CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryResponseRest> eliminarCategory(String nameCategory) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        try {
+            Optional<CategoryEntity> category = categoryRepository.findByName(nameCategory);
+            if (category.isPresent()){
+                CategoryEntity categoryOptional = category.get();
+                categoryRepository.delete(categoryOptional);
 
-        CategoryEntity category = categoryRepository.findByName(categoryDTO.getName())
-                .orElseThrow(() -> new NotFoundException("No existe una categoria: " + categoryDTO.getName()));
-
-        categoryRepository.delete(category);
+                response.setMetadata("Respuesta ok", "00", "Categoría eliminada exitosamente");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                response.setMetadata("La Categoria: " + nameCategory + " No Existe", "01", "Error al Eliminar");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.setMetadata("Repuesta no Exitosa", "01", "Error al eliminar Categoria");
+            e.printStackTrace(); // Imprimir la traza de la excepción en la consola
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+
 
 }

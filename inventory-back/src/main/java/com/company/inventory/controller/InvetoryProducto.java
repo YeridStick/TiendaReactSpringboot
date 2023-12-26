@@ -32,4 +32,10 @@ public class InvetoryProducto {
         return response;
     }
 
+    @GetMapping("buscar-producto/{nameCategory}/{nameProducto}")
+    public ResponseEntity<CategoryResponseRest> buscarProductoInCategory(@PathVariable String nameCategory, @PathVariable String nameProducto){
+        ResponseEntity<CategoryResponseRest> response = producto.buscarProductoInCategory(nameCategory, nameProducto);
+        return response;
+    }
+
 }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 public interface ProductoService {
     ResponseEntity<CategoryResponseRest> createProduct(ProductoDTO productoDTO);
     ResponseEntity<CategoryResponseRest> listForCategory(String categoryName);
-    ProductoEntity buscarProductoForCategory(String categoryName, String productoNombre);
+    ResponseEntity<CategoryResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto);
     ProductoEntity editarProducto(Long productoId, ProductoEntity productoActualizado);
     void eliminarProducto(Long productoId);
 

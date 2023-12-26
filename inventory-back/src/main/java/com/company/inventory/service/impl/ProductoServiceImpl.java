@@ -25,6 +25,12 @@ public class ProductoServiceImpl implements ProductoService {
         this.categoryRepository = categoryRepository;
     }
 
+    /**
+     * Crear Producto
+     * @param productoDTO
+     * @return
+     */
+
     @Override
     public ResponseEntity<CategoryResponseRest> createProduct(ProductoDTO productoDTO) {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -63,7 +69,11 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
-
+    /**
+     * Listar por Categoria
+     * @param categoryName
+     * @return
+     */
     @Override
     public ResponseEntity<CategoryResponseRest> listForCategory(String categoryName) {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -72,8 +82,7 @@ public class ProductoServiceImpl implements ProductoService {
 
             if (categoryEntity.isPresent()) {
                 CategoryEntity category = categoryEntity.get();
-                System.out.println("Id de categoria");
-                System.out.println(category.getId());
+
                 List<ProductoEntity> producto = productRepository.findByNombreCategory(category.getId());
 
                 response.getCategoryResponse().setCategoryName(category.getName());
@@ -91,6 +100,11 @@ public class ProductoServiceImpl implements ProductoService {
             return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Listar Todas las Categorias
+     * @return
+     */
     @Override
     public  ResponseEntity<CategoryResponseRest> listFindAllProductos() {
         CategoryResponseRest response = new CategoryResponseRest();
@@ -107,9 +121,28 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
     @Override
-    public ProductoEntity buscarProductoForCategory(String categoryName, String productoNombre) {
-        CategoryEntity producto = categoryRepository.findByName(categoryName).orElseThrow(() -> new NotFoundException("No existe la categoria: " + categoryName));
-        return productRepository.findByNombreCategoryEndProducto(producto.getId(), productoNombre);
+    public ResponseEntity<CategoryResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        try {
+            CategoryEntity category = categoryRepository.findByName(nameCategory).orElseThrow(() -> new NotFoundException("No existe la categoria: " + nameCategory));
+
+            ProductoEntity producto =  productRepository.findByNombreCategoryEndProducto(category.getId(), nameProducto);
+
+            ProductoDTO productoDTO = new ProductoDTO();
+            productoDTO.setNameCategory(nameCategory);
+            productoDTO.setPrice(producto.getPrice());
+            productoDTO.setId(producto.getId());
+            productoDTO.setNombre(producto.getNombre());            productoDTO.setDescripcion(productoDTO.getDescripcion());
+            productoDTO.setUrlImg(productoDTO.getUrlImg());
+
+            response.getCategoryResponse().setProductoDTO(productoDTO);
+            response.setMetadata("Respuesta ok", "00", "Productos de la categoría recuperados correctamente");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch ( Exception e) {
+            response.setMetadata("Repuesta no Exitosa", "01", "Error en la consulta");
+            e.printStackTrace(); // Imprimir la traza de la excepción en la consola
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @Override
     public ProductoEntity editarProducto(Long productoId, ProductoEntity productoActualizado) {

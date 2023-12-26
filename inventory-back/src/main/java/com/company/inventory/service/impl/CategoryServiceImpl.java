@@ -48,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
                                 .map(productoEntity -> {
                                     ProductoDTO productoDTO = new ProductoDTO();
                                     productoDTO.setId(productoEntity.getId());
-                                    productoDTO.setNameCategory(productoEntity.getNombre());
+                                    productoDTO.setNombre(productoEntity.getNombre());
                                     productoDTO.setDescripcion(productoEntity.getDescripcion());
                                     productoDTO.setPrice(productoEntity.getPrice());
                                     productoDTO.setUrlImg(productoEntity.getUrlImg());
@@ -84,7 +84,27 @@ public class CategoryServiceImpl implements CategoryService {
             Optional<CategoryEntity> category = Optional.ofNullable(categoryRepository.findByName(nameCategory)
                     .orElseThrow(() -> new NotFoundException("Category not found with name: " + nameCategory)));
 
-            response.getCategoryResponse().setCategoryEntity(Arrays.asList(category.orElse(null)));
+            CategoryDTO categoryDTO = new CategoryDTO();
+            categoryDTO.setId(category.get().getId());
+            categoryDTO.setName(category.get().getName());
+            categoryDTO.setDescription(category.get().getDescription());
+
+            List<ProductoEntity> productos = productoRepository.findByNombreCategory(category.get().getId());
+            List<ProductoDTO> productoDTOs = productos.stream()
+                    .map(productoEntity -> {
+                        ProductoDTO productoDTO = new ProductoDTO();
+                        productoDTO.setId(productoEntity.getId());
+                        productoDTO.setNameCategory(productoEntity.getNombre());
+                        productoDTO.setDescripcion(productoEntity.getDescripcion());
+                        productoDTO.setPrice(productoEntity.getPrice());
+                        productoDTO.setUrlImg(productoEntity.getUrlImg());
+                        return productoDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            categoryDTO.setProducts(productoDTOs);
+
+            response.getCategoryResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
             response.setMetadata("Respuesta ok", "00", "Respuesta exitosa");
         }
         catch (Exception e) {
@@ -121,7 +141,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             CategoryEntity createdCategory = categoryRepository.save(newCategory);
 
-            response.getCategoryResponse().setCategoryEntity(Arrays.asList(createdCategory));
+            response.getCategoryResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
             response.setMetadata("Respuesta ok", "00", "Categoría creada exitosamente");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
@@ -154,7 +174,7 @@ public class CategoryServiceImpl implements CategoryService {
             CategoryEntity updatedCategory = categoryRepository.save(categoryEntity);
 
             CategoryResponse categoryResponse = new CategoryResponse();
-            categoryResponse.setCategoryEntity(Arrays.asList(updatedCategory));
+            categoryResponse.setCategoryDTOS(Arrays.asList(categoryDTO));
             response.setCategoryResponse(categoryResponse);
 
             response.setMetadata("Respuesta ok", "00", "Categoría editada exitosamente");

@@ -1,9 +1,12 @@
 package com.company.inventory.service.impl;
 
 import com.company.inventory.dto.CategoryDTO;
+import com.company.inventory.dto.ProductoDTO;
 import com.company.inventory.exception.NotFoundException;
 import com.company.inventory.model.CategoryEntity;
+import com.company.inventory.model.ProductoEntity;
 import com.company.inventory.repository.CategoryRepository;
+import com.company.inventory.repository.ProductoRepository;
 import com.company.inventory.response.CategoryResponse;
 import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.service.CategoryService;
@@ -12,18 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+    @Autowired
     private CategoryRepository categoryRepository;
-
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
+    @Autowired
+    private ProductoRepository productoRepository;
 
     /**
      * Buscar todas las categorias
@@ -33,19 +33,44 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<CategoryResponseRest> getAllCategories() {
         CategoryResponseRest response = new CategoryResponseRest();
         try {
-            List<CategoryEntity> category = (List<CategoryEntity>) categoryRepository.findAll();
+            List<CategoryEntity> categories = (List<CategoryEntity>) categoryRepository.findAll();
 
-            response.getCategoryResponse().setCategoryEntity(category);
+            List<CategoryDTO> categoryDTOs = categories.stream()
+                    .map(categoryEntity -> {
+                        CategoryDTO categoryDTO = new CategoryDTO();
+                        categoryDTO.setId(categoryEntity.getId());
+                        categoryDTO.setName(categoryEntity.getName());
+                        categoryDTO.setDescription(categoryEntity.getDescription());
+
+                        // Obtener los productos asociados a la categoría usando la consulta
+                        List<ProductoEntity> productos = productoRepository.findByNombreCategory(categoryEntity.getId());
+                        List<ProductoDTO> productoDTOs = productos.stream()
+                                .map(productoEntity -> {
+                                    ProductoDTO productoDTO = new ProductoDTO();
+                                    productoDTO.setId(productoEntity.getId());
+                                    productoDTO.setNameCategory(productoEntity.getNombre());
+                                    productoDTO.setDescripcion(productoEntity.getDescripcion());
+                                    productoDTO.setPrice(productoEntity.getPrice());
+                                    productoDTO.setUrlImg(productoEntity.getUrlImg());
+                                    return productoDTO;
+                                })
+                                .collect(Collectors.toList());
+
+                        categoryDTO.setProducts(productoDTOs);
+                        return categoryDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            response.getCategoryResponse().setCategoryDTOS(categoryDTOs);
             response.setMetadata("Respuesta ok", "00", "Respuesta exitosa");
-        }
-        catch (Exception e) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
             response.setMetadata("Repuesta no Exitosa", "01", "Error en la consulta");
-            //e.getStackTrace();
             e.printStackTrace(); // Imprimir la traza de la excepción en la consola
-            return  new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
+
 
     /**
      * Buscar categoria por Nombre

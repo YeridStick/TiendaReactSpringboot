@@ -8,12 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductoRepository extends CrudRepository<ProductoEntity, Long> {
-    @Query("SELECT p FROM ProductoEntity p WHERE p.category.name = :nameCategory")
-    List<ProductoEntity> findByNombreCategory(@Param("nameCategory") String nameCategory);
+    @Query(value = "SELECT p.* FROM PRODUCTO p WHERE p.CATEGORIA_ID = :idCategory", nativeQuery = true)
+    List<ProductoEntity> findByNombreCategory(@Param("idCategory") Long idCategory);
 
-    @Query("SELECT p FROM ProductoEntity p WHERE p.category.name = :categoryName AND p.nombre = :productName")
+    @Query(value = "SELECT p.* FROM PRODUCTO p\n" +
+            "WHERE p.CATEGORIA_ID = :categoryId AND p.NOMBRE = :productName",nativeQuery = true)
     ProductoEntity findByNombreCategoryEndProducto(
-            @Param("categoryName") String categoryName,
+            @Param("categoryId") Long categoryId,
             @Param("productName") String productName
     );
+
 }

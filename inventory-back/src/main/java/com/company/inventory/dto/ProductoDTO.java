@@ -5,14 +5,20 @@ import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CategoryDTO {
-    private Long Id;
-    private String name;
-    private String description;
-    private List<ProductoDTO> products;
+public class ProductoDTO {
+
+    private Long id;
+
+    private String nombre;
+
+    private String descripcion;
+
+    private String urlImg;
+
+    private Long Price;
+
+    private String nameCategory;
 }

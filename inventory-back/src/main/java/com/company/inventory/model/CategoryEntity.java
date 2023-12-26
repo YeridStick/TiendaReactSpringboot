@@ -19,12 +19,12 @@ public class CategoryEntity implements Serializable {
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
-    private long id;
+    private Long id;
     @Column(name = "NAME", unique = true)
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @OneToMany(mappedBy = "category")
-    private List<ProductoEntity> productos;
+    /*@OneToMany(mappedBy = "category")
+    private List<ProductoEntity> productos;*/
 }

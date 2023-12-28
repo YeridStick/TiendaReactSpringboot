@@ -10,7 +10,6 @@ import java.util.List;
 
 @Data
 public class CategoryResponse {
-    //private List<CategoryEntity> categoryEntity;
     private List<CategoryDTO> categoryDTOS;
     private List<ProductoEntity> productoEntity;
     private ProductoDTO productoDTO;

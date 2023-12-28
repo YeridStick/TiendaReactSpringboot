@@ -1,58 +1,54 @@
 package com.company.inventory.controller;
 
 import com.company.inventory.dto.CategoryDTO;
-import com.company.inventory.model.CategoryEntity;
 import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.service.CategoryService;
-import com.company.inventory.service.ProductoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/category")
 //@CrossOrigin(origins = "http://localhost:4200/")
+@Tag(name = "Inventario - Categoria", description = "crud - de categorias")
 public class InventoryController {
-    @Autowired
-    private CategoryService category;
 
-    //Listar todas las categorias
+    private final CategoryService category;
+    @Autowired
+    public InventoryController(CategoryService category) {
+        this.category = category;
+    }
+
+    @Operation(summary = "Obtener Categorias", description = "Devuelve una lista de todos las categorias")
     @GetMapping("category")
     public ResponseEntity<CategoryResponseRest> getAllCategories(){
-        ResponseEntity<CategoryResponseRest> response = category.getAllCategories();
-        return response;
+        return new ResponseEntity<>(category.getAllCategories(), HttpStatus.OK);
     }
 
-    //Categoria por nombre
+    @Operation(summary = "Buscar Categoria", description = "Devuelve una categoria segun el nombre")
     @GetMapping("category/{nameCategory}")
-    public ResponseEntity<CategoryResponseRest> getCategoryByNameCategory(@PathVariable String nameCategory){
-        ResponseEntity<CategoryResponseRest> response = category.getCategoryByNameCategory(nameCategory);
-        return response;
+    public CategoryResponseRest getCategoryByNameCategory(@PathVariable String nameCategory){
+        return new ResponseEntity<>(category.getCategoryByNameCategory(nameCategory), HttpStatus.OK).getBody();
     }
 
-    //Crear categoria
+    @Operation(summary = "Crear Categoria", description = "crea una nueva categoria")
     @PostMapping("new-category")
     public ResponseEntity<CategoryResponseRest>  createCategory(@RequestBody CategoryDTO categoryDTO) {
-        ResponseEntity<CategoryResponseRest>  response = category.createCategory(categoryDTO);
-        return response;
+        return new ResponseEntity<>(category.createCategory(categoryDTO), HttpStatus.CREATED).getBody();
     }
 
-    //Editar categoria
+    @Operation(summary = "Editar Categoria", description = "actualiza la descricion de la categoria")
     @PutMapping("update-category")
     public ResponseEntity<CategoryResponseRest> editarCategory(@RequestBody CategoryDTO categoryDTO) {
-        ResponseEntity<CategoryResponseRest>  response = category.editarCategory(categoryDTO);
-        return  response;
+        return new ResponseEntity<>(category.editarCategory(categoryDTO), HttpStatus.OK).getBody();
     }
 
-    //Eliminar categoria
+    @Operation(summary = "Eliminar Categoria", description = "Elimina la categoria")
     @DeleteMapping("delete-category/{nameCategory}")
     public ResponseEntity<CategoryResponseRest> eliminarCategory(@PathVariable String nameCategory) {
-        ResponseEntity<CategoryResponseRest>  response = category.eliminarCategory(nameCategory);
-        return response;
+        return new ResponseEntity<>(category.eliminarCategory(nameCategory), HttpStatus.OK).getBody();
     }
-
 }

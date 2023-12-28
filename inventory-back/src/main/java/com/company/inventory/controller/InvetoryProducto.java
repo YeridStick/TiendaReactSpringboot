@@ -1,41 +1,55 @@
 package com.company.inventory.controller;
 
 import com.company.inventory.dto.ProductoDTO;
-import com.company.inventory.model.ProductoEntity;
 import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.service.ProductoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/producto")
+@Tag(name = "Inventario - Productos", description = "crud - de productos")
 public class InvetoryProducto {
-    @Autowired
-    private ProductoService producto;
 
+    private final ProductoService producto;
+    @Autowired
+    public InvetoryProducto(ProductoService producto) {
+        this.producto = producto;
+    }
+
+    @Operation(summary = "Obtener productos por categoria", description = "Devuelve una lista de productos de una categoria")
     @GetMapping("productos/{nameCategory}")
     public ResponseEntity<CategoryResponseRest> listForCategory(@PathVariable String nameCategory) {
-        ResponseEntity<CategoryResponseRest> response = producto.listForCategory(nameCategory);
-        return response;
+        return new ResponseEntity<>(producto.listForCategory(nameCategory), HttpStatus.OK).getBody();
     }
-
+    @Operation(summary = "Crear productos por categoria", description = "Crea un producto en una categoria")
     @PostMapping("create-producto")
     public ResponseEntity<CategoryResponseRest> createProduct(@RequestBody ProductoDTO productoDTO) {
-        ResponseEntity<CategoryResponseRest> response = producto.createProduct(productoDTO);
-        return response;
+        return new ResponseEntity<>(producto.createProduct(productoDTO), HttpStatus.CREATED).getBody();
     }
-
+    @Operation(summary = "Otener todos los productos", description = "Devuelve una lista con todos los productos")
     @GetMapping("productos/listado")
     public ResponseEntity<CategoryResponseRest> listFindAllProductos(){
-        ResponseEntity<CategoryResponseRest> response = producto.listFindAllProductos();
-        return response;
+        return new ResponseEntity<>(producto.listFindAllProductos(), HttpStatus.OK).getBody();
     }
-
+    @Operation(summary = "Bucar producto", description = "Devuelve un producto idicado en la categoria")
     @GetMapping("buscar-producto/{nameCategory}/{nameProducto}")
     public ResponseEntity<CategoryResponseRest> buscarProductoInCategory(@PathVariable String nameCategory, @PathVariable String nameProducto){
-        ResponseEntity<CategoryResponseRest> response = producto.buscarProductoInCategory(nameCategory, nameProducto);
-        return response;
+        return new ResponseEntity<>(producto.buscarProductoInCategory(nameCategory, nameProducto), HttpStatus.OK).getBody();
+    }
+    @Operation(summary = "Actualizar producto", description = "Devuelve los datos actualizados del producto")
+    @PutMapping("actualizar-producto")
+    public ResponseEntity<CategoryResponseRest> editarProducto(@RequestBody ProductoDTO productoDTO){
+        return new ResponseEntity<>(producto.editarProducto(productoDTO), HttpStatus.OK).getBody();
     }
 
+    @Operation(summary = "Eliminar producto", description = "Elimina un producto, segun el ID ingresado")
+    @DeleteMapping("eliminar-producto/{productoId}")
+    public ResponseEntity<CategoryResponseRest> eliminarProducto(@PathVariable Long productoId) {
+        return new ResponseEntity<>(producto.eliminarProducto(productoId), HttpStatus.OK).getBody();
+    }
 }

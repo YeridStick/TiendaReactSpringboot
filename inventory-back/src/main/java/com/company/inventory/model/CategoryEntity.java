@@ -13,10 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "CATEGORY")
 public class CategoryEntity implements Serializable {
-    //private static final long serialVersionUID = 1L;
 
     @Column(name = "ID")
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     private Long id;
@@ -24,7 +22,4 @@ public class CategoryEntity implements Serializable {
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
-
-    /*@OneToMany(mappedBy = "category")
-    private List<ProductoEntity> productos;*/
 }

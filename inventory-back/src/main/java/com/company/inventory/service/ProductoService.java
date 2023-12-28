@@ -9,8 +9,8 @@ public interface ProductoService {
     ResponseEntity<CategoryResponseRest> createProduct(ProductoDTO productoDTO);
     ResponseEntity<CategoryResponseRest> listForCategory(String categoryName);
     ResponseEntity<CategoryResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto);
-    ProductoEntity editarProducto(Long productoId, ProductoEntity productoActualizado);
-    void eliminarProducto(Long productoId);
+    ResponseEntity<CategoryResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO);
+    ResponseEntity<CategoryResponseRest>  eliminarProducto(Long productoId);
 
     ResponseEntity<CategoryResponseRest> listFindAllProductos();
 }

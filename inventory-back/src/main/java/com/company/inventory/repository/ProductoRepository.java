@@ -1,13 +1,16 @@
 package com.company.inventory.repository;
 
 import com.company.inventory.model.ProductoEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface ProductoRepository extends CrudRepository<ProductoEntity, Long> {
+@Repository
+public interface ProductoRepository extends JpaRepository<ProductoEntity, Long> {
     @Query(value = "SELECT p.* FROM PRODUCTO p WHERE p.CATEGORIA_ID = :idCategory", nativeQuery = true)
     List<ProductoEntity> findByNombreCategory(@Param("idCategory") Long idCategory);
 

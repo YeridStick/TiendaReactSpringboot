@@ -7,7 +7,7 @@ import com.company.inventory.model.CategoryEntity;
 import com.company.inventory.model.ProductoEntity;
 import com.company.inventory.repository.CategoryRepository;
 import com.company.inventory.repository.ProductoRepository;
-import com.company.inventory.response.CategoryResponseRest;
+import com.company.inventory.response.MensajeResponseRest;
 import com.company.inventory.service.ProductoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class ProductoServiceImpl implements ProductoService {
         this.categoryRepository = categoryRepository;
     }
     @Override
-    public ResponseEntity<CategoryResponseRest> createProduct(ProductoDTO productoDTO) {
+    public ResponseEntity<MensajeResponseRest> createProduct(ProductoDTO productoDTO) {
         String errorMessage = "Ya existe un producto con el nombre '" + productoDTO.getNombre() + "' en la categoría '" + productoDTO.getNameCategory() + "'";
-        CategoryResponseRest response = new CategoryResponseRest();
+        MensajeResponseRest response = new MensajeResponseRest();
 
         try {
             CategoryEntity categoryEntity = categoryRepository.findByName(productoDTO.getNameCategory())
@@ -59,8 +59,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest> listForCategory(String categoryName) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest> listForCategory(String categoryName) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             Optional<CategoryEntity> categoryEntity = categoryRepository.findByName(categoryName);
 
@@ -69,8 +69,8 @@ public class ProductoServiceImpl implements ProductoService {
 
                 List<ProductoEntity> producto = productRepository.findByNombreCategory(category.getId());
 
-                response.getCategoryResponse().setCategoryName(category.getName());
-                response.getCategoryResponse().setProductoEntity(producto);
+                response.getMensajeResponse().setCategoryName(category.getName());
+                response.getMensajeResponse().setProductoEntity(producto);
 
                 response.setMetadata(Constantes.TextRespuesta,Constantes.ProductosRecuperdaosCorrectamente);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -84,12 +84,12 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public  ResponseEntity<CategoryResponseRest> listFindAllProductos() {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public  ResponseEntity<MensajeResponseRest> listFindAllProductos() {
+        MensajeResponseRest response = new MensajeResponseRest();
         try{
             List<ProductoEntity> productos = productRepository.findAll();
 
-            response.getCategoryResponse().setProductoEntity(productos);
+            response.getMensajeResponse().setProductoEntity(productos);
             response.setMetadata(Constantes.TextRespuesta,Constantes.ProductosRecuperdaosCorrectamente);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -98,8 +98,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             CategoryEntity category = categoryRepository.findByName(nameCategory)
                     .orElseThrow(() -> new ExcepcionPersonalizada("No existe la categoria: " + nameCategory, HttpStatus.NOT_FOUND));
@@ -109,7 +109,7 @@ public class ProductoServiceImpl implements ProductoService {
 
             ProductoDTO productoDTO = modelMapper.map(producto, ProductoDTO.class);
 
-            response.getCategoryResponse().setProductoDTO(productoDTO);
+            response.getMensajeResponse().setProductoDTO(productoDTO);
             response.setMetadata(Constantes.TextRespuesta,Constantes.ProductosRecuperdaosCorrectamente);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch ( Exception e) {
@@ -117,8 +117,8 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
     @Override
-    public ResponseEntity<CategoryResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             CategoryEntity category =
                 categoryRepository.findByName(productoActualizadoDTO.getNameCategory())
@@ -130,10 +130,8 @@ public class ProductoServiceImpl implements ProductoService {
                 ProductoEntity productoExistente = productRepository.findById(producto.get().getId())
                         .orElseThrow(() -> new ExcepcionPersonalizada("No se encontró el producto con ID: " + productoActualizadoDTO.getId(), HttpStatus.NOT_FOUND));
 
-                productoExistente.setNombre(productoActualizadoDTO.getNombre());
-                productoExistente.setDescripcion(productoActualizadoDTO.getDescripcion());
-                productoExistente.setPrice(productoActualizadoDTO.getPrice());
-                productoExistente.setUrlImg(productoActualizadoDTO.getUrlImg());
+                ModelMapper modelMapper = new ModelMapper();
+                modelMapper.map(productoActualizadoDTO, productoExistente);
 
                 productRepository.save(productoExistente);
 
@@ -142,7 +140,7 @@ public class ProductoServiceImpl implements ProductoService {
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
-            response.getCategoryResponse().setProductoDTO(productoActualizadoDTO);
+            response.getMensajeResponse().setProductoDTO(productoActualizadoDTO);
             response.setMetadata(Constantes.TextRespuesta, "Producto actualizado de la categoría: " + productoActualizadoDTO.getNameCategory());
             return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -153,8 +151,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest>  eliminarProducto(Long productoId) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest>  eliminarProducto(Long productoId) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try{
             ProductoEntity productoExistente = productRepository.findById(productoId)
                     .orElseThrow(() -> new ExcepcionPersonalizada("No se encontró el producto con ID: " + productoId, HttpStatus.NOT_FOUND));

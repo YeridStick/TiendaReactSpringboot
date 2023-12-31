@@ -8,8 +8,8 @@ import com.company.inventory.model.CategoryEntity;
 import com.company.inventory.model.ProductoEntity;
 import com.company.inventory.repository.CategoryRepository;
 import com.company.inventory.repository.ProductoRepository;
-import com.company.inventory.response.CategoryResponse;
-import com.company.inventory.response.CategoryResponseRest;
+import com.company.inventory.response.MensajeResponse;
+import com.company.inventory.response.MensajeResponseRest;
 import com.company.inventory.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseRest getAllCategories() {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public MensajeResponseRest getAllCategories() {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             List<CategoryEntity> categories = categoryRepository.findAll();
 
@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
                     })
                     .collect(Collectors.toList());
 
-            response.getCategoryResponse().setCategoryDTOS(categoryDTOs);
+            response.getMensajeResponse().setCategoryDTOS(categoryDTOs);
             response.setMetadata(Constantes.TextRespuesta, "Datos recuperados Correctamenete");
             return response;
         } catch (Exception e) {
@@ -62,8 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseRest getCategoryByNameCategory(String nameCategory) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public MensajeResponseRest getCategoryByNameCategory(String nameCategory) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             CategoryEntity category =
                     categoryRepository.findByName(nameCategory)
@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             categoryDTO.setProducts(productoDTOs);
 
-            response.getCategoryResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
+            response.getMensajeResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
             response.setMetadata(Constantes.TextRespuesta,"Respuesta exitosa");
 
             return response;
@@ -95,8 +95,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest> createCategory(CategoryDTO categoryDTO) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest> createCategory(CategoryDTO categoryDTO) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
 
             if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
@@ -111,7 +111,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             categoryRepository.save(newCategory);
 
-            response.getCategoryResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
+            response.getMensajeResponse().setCategoryDTOS(Arrays.asList(categoryDTO));
             response.setMetadata(Constantes.TextRespuesta,"Categoría creada exitosamente");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
@@ -121,8 +121,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest> editarCategory(CategoryDTO categoryDTO) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest> editarCategory(CategoryDTO categoryDTO) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             CategoryEntity categoryEntity =  categoryRepository.findByName(categoryDTO.getName())
                     .orElseThrow(() -> new ExcepcionPersonalizada("La categoria: " + categoryDTO.getName() + " No existe", HttpStatus.NOT_FOUND));
@@ -131,9 +131,9 @@ public class CategoryServiceImpl implements CategoryService {
 
             categoryRepository.save(categoryEntity);
 
-            CategoryResponse categoryResponse = new CategoryResponse();
+            MensajeResponse categoryResponse = new MensajeResponse();
             categoryResponse.setCategoryDTOS(Arrays.asList(categoryDTO));
-            response.setCategoryResponse(categoryResponse);
+            response.setMensajeResponse(categoryResponse);
 
             response.setMetadata(Constantes.TextRespuesta,"Categoría editada exitosamente");
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -143,8 +143,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<CategoryResponseRest> eliminarCategory(String nameCategory) {
-        CategoryResponseRest response = new CategoryResponseRest();
+    public ResponseEntity<MensajeResponseRest> eliminarCategory(String nameCategory) {
+        MensajeResponseRest response = new MensajeResponseRest();
         try {
             CategoryEntity category =  categoryRepository.findByName(nameCategory)
                     .orElseThrow(() -> new ExcepcionPersonalizada("La categoria: " + nameCategory + " No existe", HttpStatus.NOT_FOUND));

@@ -1,7 +1,7 @@
 package com.company.inventory.controller;
 
 import com.company.inventory.dto.ProductoDTO;
-import com.company.inventory.response.CategoryResponseRest;
+import com.company.inventory.response.MensajeResponseRest;
 import com.company.inventory.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,33 +23,33 @@ public class InvetoryProducto {
 
     @Operation(summary = "Obtener productos por categoria", description = "Devuelve una lista de productos de una categoria")
     @GetMapping("productos/{nameCategory}")
-    public ResponseEntity<CategoryResponseRest> listForCategory(@PathVariable String nameCategory) {
+    public ResponseEntity<MensajeResponseRest> listForCategory(@PathVariable String nameCategory) {
         return new ResponseEntity<>(producto.listForCategory(nameCategory), HttpStatus.OK).getBody();
     }
     @Operation(summary = "Crear productos por categoria", description = "Crea un producto en una categoria")
     @PostMapping("create-producto")
-    public ResponseEntity<CategoryResponseRest> createProduct(@RequestBody ProductoDTO productoDTO) {
+    public ResponseEntity<MensajeResponseRest> createProduct(@RequestBody ProductoDTO productoDTO) {
         return new ResponseEntity<>(producto.createProduct(productoDTO), HttpStatus.CREATED).getBody();
     }
     @Operation(summary = "Otener todos los productos", description = "Devuelve una lista con todos los productos")
     @GetMapping("productos/listado")
-    public ResponseEntity<CategoryResponseRest> listFindAllProductos(){
+    public ResponseEntity<MensajeResponseRest> listFindAllProductos(){
         return new ResponseEntity<>(producto.listFindAllProductos(), HttpStatus.OK).getBody();
     }
     @Operation(summary = "Bucar producto", description = "Devuelve un producto idicado en la categoria")
     @GetMapping("buscar-producto/{nameCategory}/{nameProducto}")
-    public ResponseEntity<CategoryResponseRest> buscarProductoInCategory(@PathVariable String nameCategory, @PathVariable String nameProducto){
+    public ResponseEntity<MensajeResponseRest> buscarProductoInCategory(@PathVariable String nameCategory, @PathVariable String nameProducto){
         return new ResponseEntity<>(producto.buscarProductoInCategory(nameCategory, nameProducto), HttpStatus.OK).getBody();
     }
     @Operation(summary = "Actualizar producto", description = "Devuelve los datos actualizados del producto")
     @PutMapping("actualizar-producto")
-    public ResponseEntity<CategoryResponseRest> editarProducto(@RequestBody ProductoDTO productoDTO){
+    public ResponseEntity<MensajeResponseRest> editarProducto(@RequestBody ProductoDTO productoDTO){
         return new ResponseEntity<>(producto.editarProducto(productoDTO), HttpStatus.OK).getBody();
     }
 
     @Operation(summary = "Eliminar producto", description = "Elimina un producto, segun el ID ingresado")
     @DeleteMapping("eliminar-producto/{productoId}")
-    public ResponseEntity<CategoryResponseRest> eliminarProducto(@PathVariable Long productoId) {
+    public ResponseEntity<MensajeResponseRest> eliminarProducto(@PathVariable Long productoId) {
         return new ResponseEntity<>(producto.eliminarProducto(productoId), HttpStatus.OK).getBody();
     }
 }

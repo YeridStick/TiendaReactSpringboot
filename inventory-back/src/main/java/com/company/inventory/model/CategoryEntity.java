@@ -18,8 +18,10 @@ public class CategoryEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     private Long id;
+
     @Column(name = "NAME", unique = true)
     private String name;
+
     @Column(name = "DESCRIPTION")
     private String description;
 }

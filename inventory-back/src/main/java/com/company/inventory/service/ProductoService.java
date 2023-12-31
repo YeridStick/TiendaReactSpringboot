@@ -1,16 +1,15 @@
 package com.company.inventory.service;
 
 import com.company.inventory.dto.ProductoDTO;
-import com.company.inventory.model.ProductoEntity;
-import com.company.inventory.response.CategoryResponseRest;
+import com.company.inventory.response.MensajeResponseRest;
 import org.springframework.http.ResponseEntity;
 
 public interface ProductoService {
-    ResponseEntity<CategoryResponseRest> createProduct(ProductoDTO productoDTO);
-    ResponseEntity<CategoryResponseRest> listForCategory(String categoryName);
-    ResponseEntity<CategoryResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto);
-    ResponseEntity<CategoryResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO);
-    ResponseEntity<CategoryResponseRest>  eliminarProducto(Long productoId);
+    ResponseEntity<MensajeResponseRest> createProduct(ProductoDTO productoDTO);
+    ResponseEntity<MensajeResponseRest> listForCategory(String categoryName);
+    ResponseEntity<MensajeResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto);
+    ResponseEntity<MensajeResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO);
+    ResponseEntity<MensajeResponseRest>  eliminarProducto(Long productoId);
 
-    ResponseEntity<CategoryResponseRest> listFindAllProductos();
+    ResponseEntity<MensajeResponseRest> listFindAllProductos();
 }

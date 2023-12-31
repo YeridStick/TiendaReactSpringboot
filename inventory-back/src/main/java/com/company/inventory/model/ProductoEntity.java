@@ -21,12 +21,16 @@ public class ProductoEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     private long id;
+
     @Column(name = "NOMBRE", unique = true)
     private String nombre;
+
     @Column(name = "DESCRIPCION")
     private String descripcion;
+
     @Column(name = "URLIMG")
     private String urlImg;
+
     @Column(name = "PRICE")
     private Long Price;
 

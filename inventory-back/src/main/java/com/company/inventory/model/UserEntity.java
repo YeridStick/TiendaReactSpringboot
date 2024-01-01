@@ -20,6 +20,15 @@ public class UserEntity {
     @Column(name = "NOMBRE")
     private String nombre;
 
+    @Column(name = "CORREO", unique = true)
+    private String correo;
+
+    @Column(name = "TELEFONO", unique = true)
+    private Long numeroTelefono;
+
+    @Column(name = "PASSWORD")
+    private String password;
+
     @ManyToOne
     @JoinColumn(name = "TIPOIDENTIDAD")
     private TipoEntidadEntity tipoEntidad;

@@ -34,7 +34,7 @@ public class InventoryController {
         return new ResponseEntity<>(category.getCategoryByNameCategory(nameCategory), HttpStatus.OK).getBody();
     }
 
-    @Operation(summary = "Crear Categoria", description = "crea una nueva categoria")
+    @Operation(summary = "private/Crear Categoria", description = "crea una nueva categoria")
     @PostMapping("new-category")
     public ResponseEntity<MensajeResponseRest>  createCategory(@RequestBody CategoryDTO categoryDTO) {
         return new ResponseEntity<>(category.createCategory(categoryDTO), HttpStatus.CREATED).getBody();

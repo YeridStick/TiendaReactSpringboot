@@ -13,8 +13,10 @@ import com.company.inventory.repository.UserRepository;
 import com.company.inventory.response.MensajeResponseRest;
 import com.company.inventory.service.UsuarioService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
     private final TipoEntidadRepository tipoEntidadRepository;
@@ -51,6 +54,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                     .orElseThrow(() -> new ExcepcionPersonalizada("Tipo de entidad: " + userGinDTO.getTipoEntidad(), HttpStatus.NOT_FOUND));
 
             UserEntity userEntity = modelMapper.map(userGinDTO, UserEntity.class);
+            userEntity.setPassword(passwordEncoder.encode(userGinDTO.getPassword().trim()));
+
             userEntity.setTipoEntidad(tipoEntidad);
             if (userEntity.getRolesUser() == null) {
                 Optional<RolesUserEntity> objetoRoles = rolesRepository.findByCargo("User");
@@ -86,6 +91,27 @@ public class UsuarioServiceImpl implements UsuarioService {
             response.setMetadata(Constantes.TextRespuesta, "Datos recuperados Correctamenete");
             return response;
         }catch (Exception e) {
+            throw new ExcepcionPersonalizada(Constantes.TextRespuestaNo, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @Override
+    public MensajeResponseRest Userloging(String correo, String password) {
+        MensajeResponseRest response = new MensajeResponseRest();
+        try {
+            Optional<UserEntity> user = userRepository.findByCorreo(correo);
+
+            if (user.isPresent()) {
+                String encodedPassword = passwordEncoder.encode(password.trim());
+                user.get().setPassword(encodedPassword);
+
+                response.getMensajeResponse().setUser(user.get());
+                response.setMetadata(Constantes.TextRespuesta, "Usuario encontrado Exitosamente");
+                return response;
+            } else {
+                response.setMetadata(Constantes.RespuestaNoExitosa, "Usuario no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND).getBody();
+            }
+        } catch (Exception e) {
             throw new ExcepcionPersonalizada(Constantes.TextRespuestaNo, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

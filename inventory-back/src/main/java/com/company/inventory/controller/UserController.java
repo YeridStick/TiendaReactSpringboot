@@ -25,9 +25,15 @@ public class UserController {
         return new ResponseEntity<>(usuarioService.crearUsuario(userGinDTO), HttpStatus.OK);
     }
 
-    @GetMapping("listar")
+    @GetMapping("user/listar")
     @Operation(summary = "Obtener listado de Usuarios", description = "Devuelve una lista de usuarios registrados")
     public ResponseEntity<MensajeResponseRest> listarUsuarios(){
         return new ResponseEntity<>(usuarioService.listarUsuarios(), HttpStatus.OK);
+    }
+
+    @GetMapping("login/{correo}/{password}")
+    @Operation(summary = "ingreso de usuarios")
+    public MensajeResponseRest Userloging(@PathVariable String correo, @PathVariable String password){
+        return new ResponseEntity<>(usuarioService.Userloging(correo, password), HttpStatus.OK).getBody();
     }
 }

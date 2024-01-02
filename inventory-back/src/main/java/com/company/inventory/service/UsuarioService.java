@@ -6,5 +6,6 @@ import com.company.inventory.response.MensajeResponseRest;
 public interface UsuarioService {
     MensajeResponseRest crearUsuario(UserGinDTO userGinDTO);
     MensajeResponseRest listarUsuarios();
+    MensajeResponseRest Userloging(String correo, String password);
 
 }

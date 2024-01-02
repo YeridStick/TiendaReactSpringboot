@@ -19,13 +19,13 @@ public class TipoEntidadController {
         this.tipoEntidadServices = tipoEntidadServices;
     }
 
-    @PostMapping("agregar")
+    @PostMapping("agregar-entidad")
     @Operation(summary = "Crear un tipo de entidad")
     public ResponseEntity<MensajeResponseRest> crearTipoEntidad(@RequestBody TipoEntidadEntity tipoEntidad){
         return new ResponseEntity<>(tipoEntidadServices.crearTipoEntidad(tipoEntidad), HttpStatus.OK);
     }
 
-    @GetMapping("listar")
+    @GetMapping("entidad")
     @Operation(summary = "Obtener listado de tipo de entidades", description = "Devuelve una lista de entidades")
     public ResponseEntity<MensajeResponseRest> listEntidad(){
         return new ResponseEntity<>(tipoEntidadServices.listEntidad(), HttpStatus.OK);

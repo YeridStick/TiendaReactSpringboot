@@ -8,13 +8,12 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class CorsConfig {
-
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
@@ -26,8 +25,12 @@ public class CorsConfig {
         config.addAllowedHeader("Access-Control-Allow-Methods");
         config.addAllowedHeader("Access-Control-Max-Age");
 
+        config.setAllowCredentials(true);
+
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
     }
 }
+
+

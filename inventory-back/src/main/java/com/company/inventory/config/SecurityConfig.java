@@ -17,13 +17,13 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf .disable())
                 .authorizeHttpRequests(authRequest -> authRequest
-                        .requestMatchers("/api/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/category/category/**").permitAll()
                         .requestMatchers("/api/producto/productos/**").permitAll()
                         .requestMatchers("/api/producto/buscar-producto/**").permitAll()
                         .requestMatchers("/api/tipo-entidad/entidad/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
                         .anyRequest().authenticated()
+                        //.anyRequest().hasAuthority("ROLE_ADMIN")
                 )
                 .formLogin(Customizer.withDefaults())
                 .build();

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/roles")
+@CrossOrigin(origins = "http://localhost:3000/")
 @Tag(name = "Roles")
 public class RolController {
     private final RollService rollService;

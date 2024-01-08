@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/category")
-//@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = "http://localhost:3000/")
 @Tag(name = "Inventario - Categoria", description = "crud - de categorias")
 public class InventoryController {
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tipo-entidad")
+@CrossOrigin(origins = "http://localhost:3000/")
 @Tag(name = "Tipo Documento Entidad")
 public class TipoEntidadController {
     private final TipoEntidadServices tipoEntidadServices;

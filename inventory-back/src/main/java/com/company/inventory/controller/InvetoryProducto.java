@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/producto")
+@CrossOrigin(origins = "http://localhost:3000/")
 @Tag(name = "Inventario - Productos", description = "crud - de productos")
 public class InvetoryProducto {
 

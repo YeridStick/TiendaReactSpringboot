@@ -13,9 +13,11 @@ import com.company.inventory.repository.UserRepository;
 import com.company.inventory.response.MensajeResponseRest;
 import com.company.inventory.service.UsuarioService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +28,14 @@ import java.util.stream.Collectors;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final Environment environment;
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
     private final TipoEntidadRepository tipoEntidadRepository;
-    private  final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    public UsuarioServiceImpl(UserRepository userRepository, RolesRepository rolesRepository, TipoEntidadRepository tipoEntidadRepository, ModelMapper modelMapper) {
+    public UsuarioServiceImpl(Environment environment, UserRepository userRepository, RolesRepository rolesRepository, TipoEntidadRepository tipoEntidadRepository, ModelMapper modelMapper) {
+        this.environment = environment;
         this.userRepository = userRepository;
         this.rolesRepository = rolesRepository;
         this.tipoEntidadRepository = tipoEntidadRepository;
@@ -95,24 +99,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
     }
     @Override
-    public MensajeResponseRest Userloging(String correo, String password) {
+    public MensajeResponseRest Userloging(UserGinDTO userGinDTO) {
         MensajeResponseRest response = new MensajeResponseRest();
-        try {
-            Optional<UserEntity> user = userRepository.findByCorreo(correo);
+        Authentication session = SecurityContextHolder.getContext().getAuthentication();
 
-            if (user.isPresent()) {
-                String encodedPassword = passwordEncoder.encode(password.trim());
-                user.get().setPassword(encodedPassword);
-
-                response.getMensajeResponse().setUser(user.get());
-                response.setMetadata(Constantes.TextRespuesta, "Usuario encontrado Exitosamente");
-                return response;
-            } else {
-                response.setMetadata(Constantes.RespuestaNoExitosa, "Usuario no encontrado");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND).getBody();
+        if (session != null && session.getAuthorities() != null) {
+            try {
+                Optional<UserEntity> user = userRepository.findByCorreo(userGinDTO.getCorreo());  // Obtenga el usuario sin cifrar la contraseña
+                if (user.isPresent()) {
+                    if (passwordEncoder.matches(userGinDTO.getPassword().trim(), user.get().getPassword())) {  // Compare la contraseña proporcionada con la cifrada
+                        response.getMensajeResponse().setUser(user.get());
+                        response.setMetadata(Constantes.TextRespuesta, "Usuario encontrado Exitosamente");
+                        return response;
+                    } else {
+                        response.setMetadata(Constantes.RespuestaNoExitosa, "Contraseña incorrecta");
+                        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND).getBody();
+                    }
+                } else {
+                    response.setMetadata(Constantes.RespuestaNoExitosa, "Usuario no Registrado");
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND).getBody();
+                }
+            } catch (Exception e) {
+                throw new ExcepcionPersonalizada(Constantes.TextRespuestaNo, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (Exception e) {
-            throw new ExcepcionPersonalizada(Constantes.TextRespuestaNo, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            response.setMetadata(Constantes.RespuestaNoExitosa, "Usuario no Valido");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND).getBody();
         }
     }
+
 }

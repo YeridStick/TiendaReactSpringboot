@@ -5,6 +5,7 @@ import com.company.inventory.dto.ProductoDTO;
 import com.company.inventory.exception.ExcepcionPersonalizada;
 import com.company.inventory.model.CategoryEntity;
 import com.company.inventory.model.ProductoEntity;
+import com.company.inventory.model.RolesUserEntity;
 import com.company.inventory.repository.CategoryRepository;
 import com.company.inventory.repository.ProductoRepository;
 import com.company.inventory.response.MensajeResponseRest;
@@ -21,10 +22,12 @@ import java.util.*;
 public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private  final ModelMapper modelMapper;
     @Autowired
-    public ProductoServiceImpl(ProductoRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductoServiceImpl(ProductoRepository productRepository, CategoryRepository categoryRepository, ModelMapper modelMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
     }
     @Override
     public ResponseEntity<MensajeResponseRest> createProduct(ProductoDTO productoDTO) {
@@ -47,6 +50,12 @@ public class ProductoServiceImpl implements ProductoService {
             product.setDescripcion(productoDTO.getDescripcion());
             product.setUrlImg(productoDTO.getUrlImg());
             product.setPrice(productoDTO.getPrice());
+            product.setEsatdo(productoDTO.getEstado());
+            if (productoDTO.getCantidad() < 0) {
+                response.setMetadata("Cantidad de producto no valida " + productoDTO.getNameCategory(), Constantes.TextRespuesta);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            product.setCantidad(productoDTO.getCantidad());
             product.setCategory(categoryEntity);
 
             productRepository.save(product);
@@ -92,6 +101,19 @@ public class ProductoServiceImpl implements ProductoService {
             response.getMensajeResponse().setProductoEntity(productos);
             response.setMetadata(Constantes.TextRespuesta,Constantes.ProductosRecuperdaosCorrectamente);
             return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ExcepcionPersonalizada(Constantes.RespuestaNoExitosa, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @Override
+    public MensajeResponseRest findByNombreList(String nombreProducto){
+        MensajeResponseRest mensaje = new MensajeResponseRest();
+        try {
+            List<ProductoEntity> productoEntityList = productRepository.findByNombreList(nombreProducto);
+
+            mensaje.getMensajeResponse().setProductoEntity(productoEntityList);
+            mensaje.setMetadata(Constantes.TextRespuesta,Constantes.ProductosRecuperdaosCorrectamente);
+            return new ResponseEntity<>(mensaje, HttpStatus.OK).getBody();
         } catch (Exception e) {
             throw new ExcepcionPersonalizada(Constantes.RespuestaNoExitosa, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -10,6 +10,6 @@ public interface ProductoService {
     ResponseEntity<MensajeResponseRest> buscarProductoInCategory(String nameCategory, String nameProducto);
     ResponseEntity<MensajeResponseRest>  editarProducto(ProductoDTO productoActualizadoDTO);
     ResponseEntity<MensajeResponseRest>  eliminarProducto(Long productoId);
-
+    MensajeResponseRest findByNombreList(String nombreProducto);
     ResponseEntity<MensajeResponseRest> listFindAllProductos();
 }

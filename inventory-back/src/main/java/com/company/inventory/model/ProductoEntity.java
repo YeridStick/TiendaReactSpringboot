@@ -34,6 +34,12 @@ public class ProductoEntity implements Serializable {
     @Column(name = "PRICE")
     private Long Price;
 
+    @Column(name = "ESTADO")
+    private Boolean Esatdo;
+
+    @Column(name = "CATIDAD")
+    private Integer cantidad;
+
     @ManyToOne
     @JoinColumn(name = "CATEGORIA_ID")
     private CategoryEntity category ;

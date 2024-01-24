@@ -20,5 +20,9 @@ public class ProductoDTO {
 
     private Long Price;
 
+    private Integer Cantidad;
+
+    private Boolean estado;
+
     private String nameCategory;
 }

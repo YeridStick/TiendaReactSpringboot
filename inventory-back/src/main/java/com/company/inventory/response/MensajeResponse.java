@@ -4,10 +4,7 @@ import com.company.inventory.dto.CategoryDTO;
 import com.company.inventory.dto.ProductoDTO;
 import com.company.inventory.dto.logout.RolesOutDTO;
 import com.company.inventory.dto.logout.UserOutDTO;
-import com.company.inventory.model.ProductoEntity;
-import com.company.inventory.model.RolesUserEntity;
-import com.company.inventory.model.TipoEntidadEntity;
-import com.company.inventory.model.UserEntity;
+import com.company.inventory.model.*;
 import lombok.Data;
 
 import java.util.List;
@@ -20,6 +17,8 @@ public class MensajeResponse {
     private String categoryName;
     private List<TipoEntidadEntity> tipoEntidad;
     private UserEntity user;
+    private HistorialCompras historialCompra;
+    private List<HistorialCompras> historialCompras;
     private List<UserOutDTO> users;
     private List<RolesOutDTO> rolesUser;
 }

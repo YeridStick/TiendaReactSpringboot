@@ -20,5 +20,9 @@ public interface ProductoRepository extends JpaRepository<ProductoEntity, Long> 
             @Param("categoryId") Long categoryId,
             @Param("productName") String productName
     );
+    @Query(value = "SELECT * FROM producto p WHERE p.nombre LIKE %:nameProducto%", nativeQuery = true)
+    List<ProductoEntity> findByNombreList(@Param("nameProducto") String nameProducto);
+
+
 
 }

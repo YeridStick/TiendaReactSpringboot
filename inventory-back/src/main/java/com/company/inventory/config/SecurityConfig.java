@@ -19,9 +19,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest -> authRequest
                         .requestMatchers("/api/category/category/**").permitAll()
                         .requestMatchers("/api/producto/productos/**").permitAll()
+                                .requestMatchers("api/producto/buscar-productos/**").permitAll()
                         .requestMatchers("/api/producto/buscar-producto/**").permitAll()
                         .requestMatchers("/api/tipo-entidad/entidad/**").permitAll()
                         .requestMatchers("/api/user/login/**").permitAll()
+                                .requestMatchers("/api/historial/**").permitAll()
                         .anyRequest().authenticated()
                         //.anyRequest().hasAuthority("ROLE_ADMIN")
                 )

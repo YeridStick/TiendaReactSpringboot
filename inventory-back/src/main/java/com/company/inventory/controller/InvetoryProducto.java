@@ -37,8 +37,14 @@ public class InvetoryProducto {
     public ResponseEntity<MensajeResponseRest> listFindAllProductos(){
         return new ResponseEntity<>(producto.listFindAllProductos(), HttpStatus.OK).getBody();
     }
+
+    @GetMapping("buscar-productos/list/{nameProducto}")
+    public ResponseEntity<MensajeResponseRest> findByNombreList(@PathVariable String nameProducto){
+        return new ResponseEntity<>(producto.findByNombreList(nameProducto), HttpStatus.OK);
+    }
+
     @Operation(summary = "Bucar producto", description = "Devuelve un producto idicado en la categoria")
-    @GetMapping("buscar-producto/{nameCategory}/{nameProducto}")
+    @GetMapping("buscar-productos/{nameCategory}/{nameProducto}")
     public ResponseEntity<MensajeResponseRest> buscarProductoInCategory(@PathVariable String nameCategory, @PathVariable String nameProducto){
         return new ResponseEntity<>(producto.buscarProductoInCategory(nameCategory, nameProducto), HttpStatus.OK).getBody();
     }
